@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from 'react-redux';
 import api from "../../services/api";
-import { addReverve } from '../../store/modules/reserve/actions';
+import { addReverveRequest } from '../../store/modules/reserve/actions';
 
 import { MdFlightTakeoff } from 'react-icons/md'
 import './style.css';
@@ -19,8 +19,8 @@ export default function Home() {
     loadApi();
   }, []);
 
-  function handleAdd(trip){
-    dispatch(addReverve(trip))
+  function handleAdd(id){
+    dispatch(addReverveRequest(id))
   }
 
   return (
@@ -32,7 +32,7 @@ export default function Home() {
             <strong>{trip.title}</strong>
             <span>Status: {trip.status ? "Disponivel" : "Indisponivel"}</span>
 
-            <button type="button" onClick={()=> handleAdd(trip)}>
+            <button type="button" onClick={()=> handleAdd(trip.id)}>
               <div>
                 <MdFlightTakeoff size={16} color="#fff" />
               </div>

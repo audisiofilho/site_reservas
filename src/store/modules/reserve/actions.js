@@ -1,6 +1,12 @@
-export function addReverve(trip){
+export function addReverveRequest(id){
     return {
-        type: "ADD_RESERVE",
+        type: "ADD_RESERVE_REQUEST",
+        id
+      }
+}
+export function addReverveSuccess(trip){
+    return {
+        type: "ADD_RESERVE_SUCCESS",
         trip
       }
 }
