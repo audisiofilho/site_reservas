@@ -1,5 +1,5 @@
 import { all, call, put, takeLatest, select } from "redux-saga/effects";
-import { addReverveSuccess, updateAmountReserve } from "./actions";
+import { addReverveSuccess, updateAmountReserveSuccess } from "./actions";
 
 import api from "../../../services/api";
 
@@ -8,11 +8,22 @@ function* addToReserve({ id }) {
     state.reserve.find((trip) => trip.id === id)
   );
 
-  if (tripExists) {
-    //Aumentar o amount
-    const amount = tripExists.amount + 1;
+  const myStock = yield call(api.get, `/stock/${id}`);
 
-    yield put(updateAmountReserve(id, amount))
+  const stockAmount = myStock.data.amount;
+
+  const currentStock = tripExists ? tripExists.amount : 0;
+
+  const amount = currentStock + 1;
+
+  if(amount > stockAmount){
+      alert("Quantidade maxima atingida.");
+      return;
+  }
+
+  if (tripExists) {
+
+    yield put(updateAmountReserveSuccess(id, amount))
 
   } else {
     const response = yield call(api.get, `trips/${id}`);
@@ -26,4 +37,22 @@ function* addToReserve({ id }) {
   }
 }
 
-export default all([takeLatest("ADD_RESERVE_REQUEST", addToReserve)]);
+function* updateAmount({ id, amount }){
+    if(amount <= 0) return;
+
+    const myStock = yield call(api.get, `/stock/${id}`);
+
+    const stockAmount = myStock.data.amount;
+
+    if(amount > stockAmount){
+        alert("Quantidade maxima atingida.");
+        return;
+    }
+
+    yield put(updateAmountReserveSuccess(id, amount));
+}
+
+export default all([
+    takeLatest("ADD_RESERVE_REQUEST", addToReserve),
+    takeLatest("UPDATE_RESERVE_REQUEST", updateAmount),
+]);
